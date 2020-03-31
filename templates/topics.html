@@ -8,4 +8,30 @@
 
 
 {% block content %}
+<a href="{% url 'new_topic' board.pk %}" class="btn btn-primary">New topic</a>
+
+<table class="table">
+    <thead class="thead-dark">
+    <tr>
+        <th>Topic</th>
+        <th>Created by</th>
+        <th>Posts</th>
+        <th>Views</th>
+        <th>Created dt</th>
+    </tr>
+    </thead>
+    <tbody>
+    {%for topic in board.topics.all%}
+    <tr>
+        <td>{{ topic.subject}}</td>
+        <td>{{ topic.created_by.username}}</td>
+        <td>0</td>
+        <td>0</td>
+        <td>{{ topic.created_dt}}</td>
+
+    </tr>
+    {%endfor%}
+
+    </tbody>
+</table>
 {% endblock %}
