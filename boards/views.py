@@ -4,6 +4,7 @@ from .models import Board
 from django.contrib.auth.models import User
 from .models import Topic,Post
 from .forms import NewTopicForm
+from django.contrib.auth.decorators import login_required
 # Create your views here.
 
 def home(request):
@@ -14,28 +15,26 @@ def home(request):
 
 
 def board_topics(request,board_id):
-    # try:
-    #     board = Board.objects.get(pk=board_id)
-    # except Board.DoesNotExist:
-    #     raise Http404
+
     board = get_object_or_404(Board,pk=board_id)
     return render(request,'topics.html',{'board':board})
 
 
+@login_required
 def new_topic(request,board_id):
     board = get_object_or_404(Board,pk=board_id)
-    user = User.objects.first()
+    # user = User.objects.first()
     if request.method == "POST":
         form =NewTopicForm(request.POST)
         if form.is_valid():
             topic = form.save(commit=False)
             topic.board = board
-            topic.created_by = user
+            topic.created_by = request.user
             topic.save()
 
             post = Post.objects.create(
                 message=form.cleaned_data.get('message'),
-                created_by = user,
+                created_by = request.user,
                 topic=topic
 
             )
@@ -47,7 +46,10 @@ def new_topic(request,board_id):
 
 
 
+def topic_posts(request,board_id,topic_id):
+    topic = get_object_or_404(Topic,board__pk=board_id,pk=topic_id)
 
+    return render(request,'topic_posts.html',{'topic':topic})
 
 
 
