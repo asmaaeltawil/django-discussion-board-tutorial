@@ -5,6 +5,7 @@ from django.contrib.auth.models import User
 from .models import Topic,Post
 from .forms import NewTopicForm, PostForm
 from django.contrib.auth.decorators import login_required
+from django.db.models import Count
 # Create your views here.
 
 def home(request):
@@ -17,7 +18,8 @@ def home(request):
 def board_topics(request,board_id):
 
     board = get_object_or_404(Board,pk=board_id)
-    return render(request,'topics.html',{'board':board})
+    topics = board.topics.order_by('-created_dt').annotate(comments=Count('posts'))
+    return render(request,'topics.html',{'board':board,'topics':topics})
 
 
 @login_required
